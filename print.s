@@ -1,12 +1,15 @@
 .section .data
-output:
-    .string "Hello World!!!"
+
+.LC0:
+	.string "Hello World"
 
 .section .text
 .globl main
 .type main, @function
 main:
-	pushq $output
+#	xor %rdi, %rdi
+	leaq .LC0(%rip), %r9
+#	pushq $.LC0
 	call print
 
 	movq $60, %rax
@@ -20,7 +23,7 @@ length:
     	movq %rsp, %rbp
 
     	xor %rcx, %rcx
-    	movq 16(%rbp), %rax
+    	movq %rdi, %rax
 loop:
     	movb (%rax), %dl
     	test %dl, %dl  
@@ -39,14 +42,13 @@ end_loop:
 .type print, @function
 print:
 	pushq %rbp
-	movq %rsp, %rbp
+	movq %rsp, %rbp	
+
 	movq $1, %rax
-
-	pushq 16(%rbp)
-	call length	
-
-	movq 16(%rbp), %rsi
-	movq %rcx, %rdx
+	movq %r9, %rsi
+#	movq 16(%rbp), %rsi
+#	leaq .LC0(%rip), %rsi
+	movq $11, %rdx
 	syscall
 	
 	movq %rbp, %rsp
